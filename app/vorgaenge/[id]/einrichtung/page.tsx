@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -68,6 +68,19 @@ export default function Einrichtung() {
     validateDates();
   };
 
+  const setTimeToNow = (type: "start" | "end") => {
+    const now = new Date();
+    const date = now.toISOString().split("T")[0];
+    const time = now.toTimeString().slice(0, 5);
+
+    setFormData((prev) => ({
+      ...prev,
+      ...(type === "start"
+        ? { datumBeginn: date, startTime: time }
+        : { datumEnde: date, endTime: time }),
+    }));
+  };
+
   if (!vorgang) {
     return null;
   }
@@ -116,7 +129,7 @@ export default function Einrichtung() {
 
             <div className="space-y-2">
               <Label>Beginn der Maßnahme</Label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
                 <div className="grid gap-2">
                   <Label
                     htmlFor="datumBeginn"
@@ -151,12 +164,21 @@ export default function Einrichtung() {
                     className={dateError ? "border-destructive" : ""}
                   />
                 </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setTimeToNow("start")}
+                  className="flex items-center gap-2"
+                >
+                  <Clock className="h-4 w-4" />
+                  Jetzt
+                </Button>
               </div>
             </div>
 
             <div className="space-y-2">
               <Label>Ende der Maßnahme</Label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-[1fr_1fr_auto] gap-4 items-end">
                 <div className="grid gap-2">
                   <Label
                     htmlFor="datumEnde"
@@ -191,6 +213,15 @@ export default function Einrichtung() {
                     className={dateError ? "border-destructive" : ""}
                   />
                 </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setTimeToNow("end")}
+                  className="flex items-center gap-2"
+                >
+                  <Clock className="h-4 w-4" />
+                  Jetzt
+                </Button>
               </div>
             </div>
 
