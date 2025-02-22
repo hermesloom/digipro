@@ -28,7 +28,6 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import { X } from "lucide-react";
-import { useSession } from "@/contexts/SessionContext";
 
 export default function Beweismittel() {
   const [isScanning, setIsScanning] = useState(false);

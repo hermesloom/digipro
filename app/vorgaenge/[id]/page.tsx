@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Circle, ArrowLeft, PlusCircle } from "lucide-react";
+import { Circle, ArrowLeft, PlusCircle } from "lucide-react";
 import Link from "next/link";
 
 const steps = [
