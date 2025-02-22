@@ -62,13 +62,13 @@ export default function NeuerVorgang() {
             </Link>
           </Button>
           <div>
-            <CardTitle>Neuer Vorgang</CardTitle>
+            <CardTitle>Vorgang bearbeiten</CardTitle>
             <CardDescription>
               Bitte füllen Sie alle erforderlichen Schritte aus
             </CardDescription>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <div className="space-y-4">
             {steps.map((step) => (
               <div
@@ -98,6 +98,12 @@ export default function NeuerVorgang() {
                 </Button>
               </div>
             ))}
+          </div>
+
+          <div className="border-t pt-6">
+            <Button className="w-full" size="lg" asChild>
+              <Link href="/vorgaenge">Vorgang speichern</Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
