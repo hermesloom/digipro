@@ -124,7 +124,7 @@ export default function NeuerVorgang() {
   };
 
   const areAllBeweismittelComplete = (vorgang?: Vorgang) => {
-    return vorgang?.beweismittel?.every(isBeweismittelComplete) || true;
+    return vorgang?.beweismittel?.every(isBeweismittelComplete);
   };
 
   const isErklaerungComplete = (vorgang?: Vorgang) => {

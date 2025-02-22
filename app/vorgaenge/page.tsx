@@ -24,6 +24,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { VorgangDialog } from "@/app/components/VorgangDialog";
 
 export default function Vorgaenge() {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function Vorgaenge() {
   const { vorgaenge, addVorgang, vorgaengeLoaded, removeVorgang } =
     useSession();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectedVorgang, setSelectedVorgang] = useState<string | null>(null);
 
   const handleAddVorgang = async () => {
     try {
@@ -150,6 +152,13 @@ export default function Vorgaenge() {
                     )}
                   </div>
                   <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setSelectedVorgang(vorgang.id)}
+                      className="flex items-center gap-2"
+                    >
+                      Anzeigen
+                    </Button>
                     <Button variant="outline" asChild>
                       <Link href={`/vorgaenge/${vorgang.id}`}>Bearbeiten</Link>
                     </Button>
@@ -190,6 +199,14 @@ export default function Vorgaenge() {
           )}
         </CardContent>
       </Card>
+
+      {selectedVorgang && (
+        <VorgangDialog
+          vorgang={vorgaenge.find((v) => v.id === selectedVorgang)!}
+          open={Boolean(selectedVorgang)}
+          onOpenChange={(open) => !open && setSelectedVorgang(null)}
+        />
+      )}
     </div>
   );
 }
