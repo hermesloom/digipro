@@ -112,9 +112,9 @@ export function VorgangDialog({
                 <div>
                   <span className="text-muted-foreground">Zweck:</span>{" "}
                   {Object.entries(vorgang.grund.zweck)
-                    .filter(([_, value]) => value)
+                    .filter((x) => x[1])
                     .map(
-                      ([key, _]) =>
+                      ([key]) =>
                         ({
                           strafverfolgung: "Strafverfolgung",
                           ordnungswidrigkeiten:

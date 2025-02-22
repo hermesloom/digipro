@@ -51,8 +51,6 @@ export default function Einrichtung() {
     const endDateTime = new Date(`${formData.datumEnde}T${formData.endTime}`);
 
     setDateError(startDateTime > endDateTime);
-
-    console.log(startDateTime, endDateTime);
   };
 
   useEffect(() => {
