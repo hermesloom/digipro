@@ -4,11 +4,11 @@ import { ObjectId } from "mongodb";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     const body = await request.json();
-    const { id } = params;
+    const { id } = context.params;
 
     // Validate ObjectId
     if (!ObjectId.isValid(id)) {
