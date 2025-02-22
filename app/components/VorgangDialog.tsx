@@ -4,10 +4,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useRef } from "react";
 import { Vorgang } from "@/lib/session";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
+import { useReactToPrint } from "react-to-print";
 
 interface VorgangDialogProps {
   vorgang: Vorgang;
@@ -20,6 +24,12 @@ export function VorgangDialog({
   open,
   onOpenChange,
 }: VorgangDialogProps) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({
+    contentRef,
+    bodyClass: "p-12",
+  });
+
   const formatDate = (date: string) => {
     return format(new Date(date), "dd.MM.yyyy", { locale: de });
   };
@@ -33,12 +43,23 @@ export function VorgangDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            Vorgang #{vorgang.einrichtung.vorgangsnummer}
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle>
+              Vorgang #{vorgang.einrichtung.vorgangsnummer}
+            </DialogTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => reactToPrintFn()}
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              PDF Export
+            </Button>
+          </div>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-6 py-4" ref={contentRef}>
           {/* Einrichtung */}
           <section className="space-y-3">
             <h3 className="font-semibold">Einrichtung</h3>
