@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSession } from "@/contexts/SessionContext";
 import { Vorgang } from "@/lib/session";
+import { PlusCircle, ChevronRight } from "lucide-react";
 
 export default function Vorgaenge() {
   const router = useRouter();
@@ -42,62 +43,55 @@ export default function Vorgaenge() {
     }
   };
 
-  if (!vorgaengeLoaded) {
-    return (
-      <div className="min-h-screen p-4">
-        <Card className="w-full max-w-4xl mx-auto">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Vorgänge</CardTitle>
-              <CardDescription>Liste aller erfassten Vorgänge</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <p>Vorgänge werden geladen...</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen p-4">
       <Card className="w-full max-w-4xl mx-auto">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Vorgänge</CardTitle>
-            <CardDescription>Liste aller erfassten Vorgänge</CardDescription>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Vorgänge</CardTitle>
+              <CardDescription>
+                Übersicht aller Durchsuchungs- und Sicherstellungsprotokolle
+              </CardDescription>
+            </div>
+            <Button asChild>
+              <Link href="/vorgaenge/neu">
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Neuer Vorgang
+              </Link>
+            </Button>
           </div>
-          <Button onClick={handleAddVorgang} disabled={isLoading}>
-            {isLoading ? "Wird erstellt..." : "Vorgang hinzufügen"}
-          </Button>
         </CardHeader>
         <CardContent>
-          {vorgaenge.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <p>Noch keine Vorgänge erfasst</p>
-              <p className="text-sm">
-                Klicken Sie auf &quot;Vorgang hinzufügen&quot; um einen neuen
-                Vorgang zu erstellen
-              </p>
+          {!vorgaengeLoaded ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Vorgänge werden geladen...
+            </div>
+          ) : vorgaenge.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Keine Vorgänge vorhanden. Erstellen Sie einen neuen Vorgang.
             </div>
           ) : (
             <div className="space-y-4">
               {vorgaenge.map((vorgang) => (
-                <div
+                <Link
                   key={vorgang.id}
-                  className="flex items-center justify-between p-4 rounded-lg border"
+                  href={`/vorgaenge/${vorgang.id}`}
+                  className="block"
                 >
-                  <div>
-                    <p className="font-medium">Vorgang {vorgang.id}</p>
-                    <p className="text-sm text-muted-foreground">TODO</p>
+                  <div className="flex items-center gap-4 p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                    <div className="flex-1">
+                      <p className="font-medium">
+                        {vorgang.einrichtung?.vorgangsnummer || "Ohne Nummer"}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {vorgang.einrichtung?.ort || "Kein Ort"} -{" "}
+                        {vorgang.einrichtung?.datumBeginn || "Kein Datum"}
+                      </p>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </div>
-                  <Button variant="outline" asChild>
-                    <Link href={`/vorgaenge/${vorgang.id}`}>Bearbeiten</Link>
-                  </Button>
-                </div>
+                </Link>
               ))}
             </div>
           )}
