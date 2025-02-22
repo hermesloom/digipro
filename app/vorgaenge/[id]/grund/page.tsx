@@ -199,6 +199,8 @@ export default function Grund() {
               sectionName="grund"
               formData={formData}
               className="w-full"
+              label="Speichern und weiter zur Durchsuchung"
+              targetRoute="/durchsuchung"
             />
           </form>
         </CardContent>

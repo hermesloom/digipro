@@ -14,6 +14,8 @@ export interface SaveButtonProps {
   className?: string;
   onBeforeSave?: () => void;
   disabled?: boolean;
+  label?: string;
+  targetRoute?: string;
 }
 
 export function SaveButton({
@@ -24,6 +26,8 @@ export function SaveButton({
   className,
   onBeforeSave,
   disabled,
+  label = "Speichern",
+  targetRoute = "",
 }: SaveButtonProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
@@ -53,7 +57,7 @@ export function SaveButton({
       }
 
       updateVorgang(vorgang.id, updatedVorgang);
-      router.push(`/vorgaenge/${vorgang.id}`);
+      router.push(`/vorgaenge/${vorgang.id}${targetRoute}`);
     } catch (error) {
       console.error("Error updating vorgang:", error);
       // Here you might want to show an error message to the user
@@ -75,7 +79,7 @@ export function SaveButton({
           Speichern...
         </>
       ) : (
-        "Speichern"
+        label
       )}
     </Button>
   );

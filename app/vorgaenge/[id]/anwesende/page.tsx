@@ -71,6 +71,8 @@ export default function Anwesende() {
               sectionName="anwesende"
               formData={formData}
               className="w-full"
+              label="Speichern und weiter zur Erklärung"
+              targetRoute="/erklaerung"
             />
           </form>
         </CardContent>

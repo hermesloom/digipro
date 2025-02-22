@@ -306,6 +306,8 @@ export default function Erklaerung() {
               formData={formData}
               className="w-full"
               onBeforeSave={handleSignatureSave}
+              label="Speichern und Vorgang abschließen"
+              targetRoute="/"
             />
           </form>
         </CardContent>

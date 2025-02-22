@@ -238,6 +238,8 @@ export default function Einrichtung() {
               formData={formData}
               className="w-full"
               disabled={dateError}
+              label="Speichern"
+              targetRoute="/betroffener"
             />
           </form>
         </CardContent>

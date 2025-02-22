@@ -81,6 +81,8 @@ export default function Betroffener() {
               sectionName="betroffener"
               formData={formData}
               className="w-full"
+              label="Speichern und weiter zum Grund"
+              targetRoute="/grund"
             />
           </form>
         </CardContent>

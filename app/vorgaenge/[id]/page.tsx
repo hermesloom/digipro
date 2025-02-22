@@ -21,6 +21,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "@/contexts/SessionContext";
 import { Vorgang, Beweismittel } from "@/lib/session";
 import { v4 as uuidv4 } from "uuid";
+import { useState } from "react";
 
 const steps = [
   {
@@ -66,6 +67,7 @@ export default function NeuerVorgang() {
   const router = useRouter();
   const { getVorgang, updateVorgang } = useSession();
   const vorgang = getVorgang(params.id as string);
+  const [isAddingBeweismittel, setIsAddingBeweismittel] = useState(false);
 
   const isEinrichtungComplete = (vorgang?: Vorgang) => {
     if (!vorgang?.einrichtung) return false;
@@ -122,8 +124,7 @@ export default function NeuerVorgang() {
   };
 
   const areAllBeweismittelComplete = (vorgang?: Vorgang) => {
-    if (!vorgang?.beweismittel?.length) return false;
-    return vorgang.beweismittel.every(isBeweismittelComplete);
+    return vorgang?.beweismittel?.every(isBeweismittelComplete) || true;
   };
 
   const isErklaerungComplete = (vorgang?: Vorgang) => {
@@ -141,6 +142,8 @@ export default function NeuerVorgang() {
 
   const handleAddBeweismittel = async () => {
     if (!vorgang) return;
+
+    setIsAddingBeweismittel(true);
 
     const newBeweismittel: Beweismittel = {
       id: uuidv4(),
@@ -175,6 +178,8 @@ export default function NeuerVorgang() {
       );
     } catch (error) {
       console.error("Error updating vorgang:", error);
+    } finally {
+      setIsAddingBeweismittel(false);
     }
   };
 
@@ -319,12 +324,20 @@ export default function NeuerVorgang() {
                       : undefined
                   }
                   asChild={step.id !== "beweismittel"}
+                  disabled={step.id === "beweismittel" && isAddingBeweismittel}
                 >
                   {step.id === "beweismittel" ? (
-                    <>
-                      <PlusCircle className="h-4 w-4" />
-                      Hinzufügen
-                    </>
+                    isAddingBeweismittel ? (
+                      <>
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                        Wird hinzugefügt...
+                      </>
+                    ) : (
+                      <>
+                        <PlusCircle className="h-4 w-4" />
+                        Hinzufügen
+                      </>
+                    )
                   ) : (
                     <Link href={`/vorgaenge/${params.id}/${step.id}`}>
                       Ausfüllen
