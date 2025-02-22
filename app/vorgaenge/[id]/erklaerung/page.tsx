@@ -24,8 +24,8 @@ import SignaturePad from "react-signature-canvas";
 
 export default function Erklaerung() {
   const [selectedWiderspruch, setSelectedWiderspruch] = useState<string[]>([]);
-  const signatureBetroffenerRef = useRef<SignaturePad>(null);
-  const signatureZeugeRef = useRef<SignaturePad>(null);
+  const signatureBetroffenerRef = useRef<SignaturePad | null>(null);
+  const signatureZeugeRef = useRef<SignaturePad | null>(null);
 
   const widerspruchOptions = [
     { value: "01", label: "01" },
@@ -41,7 +41,7 @@ export default function Erklaerung() {
     );
   };
 
-  const clearSignature = (ref: React.RefObject<SignaturePad>) => {
+  const clearSignature = (ref: React.RefObject<SignaturePad | null>) => {
     ref.current?.clear();
   };
 
