@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -16,6 +17,7 @@ import { useState } from "react";
 import { useSession } from "@/contexts/SessionContext";
 import { useVorgang } from "@/contexts/SessionContext";
 import { SaveButton } from "@/app/components/SaveButton";
+import { Alert } from "@/components/ui/alert";
 
 export default function Einrichtung() {
   const { updateVorgang } = useSession();
@@ -30,12 +32,40 @@ export default function Einrichtung() {
     endTime: vorgang?.einrichtung?.endTime || "",
   });
 
+  const [dateError, setDateError] = useState(false);
+
+  const validateDates = () => {
+    if (
+      !formData.datumBeginn ||
+      !formData.datumEnde ||
+      !formData.startTime ||
+      !formData.endTime
+    ) {
+      setDateError(false);
+      return;
+    }
+
+    const startDateTime = new Date(
+      `${formData.datumBeginn}T${formData.startTime}`
+    );
+    const endDateTime = new Date(`${formData.datumEnde}T${formData.endTime}`);
+
+    setDateError(startDateTime > endDateTime);
+
+    console.log(startDateTime, endDateTime);
+  };
+
+  useEffect(() => {
+    validateDates();
+  }, [formData]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [id]: value,
     }));
+    validateDates();
   };
 
   if (!vorgang) {
@@ -90,7 +120,9 @@ export default function Einrichtung() {
                 <div className="grid gap-2">
                   <Label
                     htmlFor="datumBeginn"
-                    className="text-muted-foreground"
+                    className={`text-muted-foreground ${
+                      dateError ? "text-destructive" : ""
+                    }`}
                   >
                     Datum
                   </Label>
@@ -99,10 +131,16 @@ export default function Einrichtung() {
                     type="date"
                     value={formData.datumBeginn}
                     onChange={handleChange}
+                    className={dateError ? "border-destructive" : ""}
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="startTime" className="text-muted-foreground">
+                  <Label
+                    htmlFor="startTime"
+                    className={`text-muted-foreground ${
+                      dateError ? "text-destructive" : ""
+                    }`}
+                  >
                     Uhrzeit
                   </Label>
                   <Input
@@ -110,6 +148,7 @@ export default function Einrichtung() {
                     type="time"
                     value={formData.startTime}
                     onChange={handleChange}
+                    className={dateError ? "border-destructive" : ""}
                   />
                 </div>
               </div>
@@ -119,7 +158,12 @@ export default function Einrichtung() {
               <Label>Ende der Maßnahme</Label>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="datumEnde" className="text-muted-foreground">
+                  <Label
+                    htmlFor="datumEnde"
+                    className={`text-muted-foreground ${
+                      dateError ? "text-destructive" : ""
+                    }`}
+                  >
                     Datum
                   </Label>
                   <Input
@@ -127,10 +171,16 @@ export default function Einrichtung() {
                     type="date"
                     value={formData.datumEnde}
                     onChange={handleChange}
+                    className={dateError ? "border-destructive" : ""}
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="endTime" className="text-muted-foreground">
+                  <Label
+                    htmlFor="endTime"
+                    className={`text-muted-foreground ${
+                      dateError ? "text-destructive" : ""
+                    }`}
+                  >
                     Uhrzeit
                   </Label>
                   <Input
@@ -138,10 +188,17 @@ export default function Einrichtung() {
                     type="time"
                     value={formData.endTime}
                     onChange={handleChange}
+                    className={dateError ? "border-destructive" : ""}
                   />
                 </div>
               </div>
             </div>
+
+            {dateError && (
+              <Alert variant="destructive">
+                Der Beginn der Maßnahme kann nicht nach dem Ende liegen.
+              </Alert>
+            )}
 
             <SaveButton
               vorgang={vorgang}
@@ -149,6 +206,7 @@ export default function Einrichtung() {
               sectionName="einrichtung"
               formData={formData}
               className="w-full"
+              disabled={dateError}
             />
           </form>
         </CardContent>

@@ -13,6 +13,7 @@ export interface SaveButtonProps {
   formData: any;
   className?: string;
   onBeforeSave?: () => void;
+  disabled?: boolean;
 }
 
 export function SaveButton({
@@ -22,6 +23,7 @@ export function SaveButton({
   formData,
   className,
   onBeforeSave,
+  disabled,
 }: SaveButtonProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
@@ -64,7 +66,7 @@ export function SaveButton({
     <Button
       type="submit"
       className={className}
-      disabled={isSaving}
+      disabled={isSaving || disabled}
       onClick={handleSave}
     >
       {isSaving ? (
