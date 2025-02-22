@@ -20,24 +20,24 @@ import {
 import { useRouter } from "next/navigation";
 
 const polizeiDienststellen = [
-  "Polizeikommissariat Mitte",
-  "Polizeikommissariat Nord",
-  "Polizeikommissariat Süd",
+  "Polizeikommissariat Bad Harzburg",
   "Polizeikommissariat Bundesautobahn",
-  "Zentraler Kriminaldienst",
-  "Verkehrsunfalldienst",
+  "Polizeikommissariat Helmstedt",
+  "Polizeikommissariat Königslutter",
   "Polizeikommissariat Meine",
   "Polizeikommissariat Meinersen",
-  "Polizeikommissariat Wittingen",
-  "Polizeikommissariat Bad Harzburg",
+  "Polizeikommissariat Mitte",
+  "Polizeikommissariat Nord",
   "Polizeikommissariat Oberharz",
-  "Polizeikommissariat Seesen",
   "Polizeikommissariat Peine",
-  "Polizeikommissariat Wolfenbüttel",
-  "Polizeikommissariat Salzgitter-Bad",
-  "Polizeikommissariat Königslutter",
   "Polizeikommissariat Schöningen",
-  "Polizeikommissariat Helmstedt",
+  "Polizeikommissariat Seesen",
+  "Polizeikommissariat Salzgitter-Bad",
+  "Polizeikommissariat Süd",
+  "Polizeikommissariat Wittingen",
+  "Polizeikommissariat Wolfenbüttel",
+  "Verkehrsunfalldienst",
+  "Zentraler Kriminaldienst",
 ];
 
 export default function Home() {
