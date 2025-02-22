@@ -13,9 +13,23 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useVorgang } from "@/contexts/SessionContext";
+import { useSession } from "@/contexts/SessionContext";
+import { SaveButton } from "@/app/components/SaveButton";
+import { useState } from "react";
 
 export default function Anwesende() {
   const vorgang = useVorgang();
+  const { updateVorgang } = useSession();
+
+  const [formData, setFormData] = useState({
+    names: vorgang.anwesende?.names || "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setFormData({ names: value });
+  };
+
   return (
     <div className="min-h-screen p-4">
       <Card className="w-full max-w-4xl mx-auto">
@@ -37,23 +51,27 @@ export default function Anwesende() {
           </div>
         </CardHeader>
         <CardContent>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <div className="grid gap-2">
-              <Label htmlFor="anwesende">
+              <Label htmlFor="names">
                 Außer der Unterzeichnerin oder dem Unterzeichner waren anwesend
                 (auch Zeugen angeben)
               </Label>
               <Input
-                id="anwesende"
+                id="names"
                 placeholder="Namen der anwesenden Personen"
+                value={formData.names}
+                onChange={handleChange}
               />
             </div>
 
-            <Button type="submit" className="w-full" asChild>
-              <Link href={`/vorgaenge/${vorgang.id}/erklaerung`}>
-                Speichern
-              </Link>
-            </Button>
+            <SaveButton
+              vorgang={vorgang}
+              updateVorgang={updateVorgang}
+              sectionName="anwesende"
+              formData={formData}
+              className="w-full"
+            />
           </form>
         </CardContent>
       </Card>

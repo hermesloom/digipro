@@ -19,32 +19,109 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import SignaturePad from "react-signature-canvas";
-import { useVorgang } from "@/contexts/SessionContext";
+import { useVorgang, useSession } from "@/contexts/SessionContext";
+import { SaveButton } from "@/app/components/SaveButton";
 
 export default function Erklaerung() {
   const vorgang = useVorgang();
-  const [selectedWiderspruch, setSelectedWiderspruch] = useState<string[]>([]);
+  const { updateVorgang } = useSession();
+
+  const [formData, setFormData] = useState({
+    erklaerer: vorgang.erklaerung?.erklaerer || null,
+    durchsuchungGestattet: vorgang.erklaerung?.durchsuchungGestattet || null,
+    widerspruch: vorgang.erklaerung?.widerspruch || [],
+    durchsichtEinverstanden:
+      vorgang.erklaerung?.durchsichtEinverstanden || false,
+    zeugeVerzichtet: vorgang.erklaerung?.zeugeVerzichtet || false,
+    signatureBetroffener: vorgang.erklaerung?.signatureBetroffener || "",
+    signatureZeuge: vorgang.erklaerung?.signatureZeuge || "",
+  });
+
   const signatureBetroffenerRef = useRef<SignaturePad | null>(null);
   const signatureZeugeRef = useRef<SignaturePad | null>(null);
 
-  const widerspruchOptions = [
-    { value: "01", label: "01" },
-    { value: "02", label: "02" },
-    { value: "03", label: "03" },
-  ];
+  useEffect(() => {
+    if (formData.signatureBetroffener && signatureBetroffenerRef.current) {
+      signatureBetroffenerRef.current.fromDataURL(
+        formData.signatureBetroffener
+      );
+    }
+    if (formData.signatureZeuge && signatureZeugeRef.current) {
+      signatureZeugeRef.current.fromDataURL(formData.signatureZeuge);
+    }
+  }, [formData.signatureBetroffener, formData.signatureZeuge]);
+
+  const widerspruchOptions = vorgang.beweismittel.map((beweismittel) => ({
+    value: beweismittel.id,
+    label: beweismittel.lfdNummer,
+    sachen: beweismittel.sachen || "Keine Beschreibung",
+  }));
 
   const handleWiderspruchChange = (value: string) => {
-    setSelectedWiderspruch((prev) =>
-      prev.includes(value)
-        ? prev.filter((item) => item !== value)
-        : [...prev, value]
-    );
+    setFormData((prev) => ({
+      ...prev,
+      widerspruch: prev.widerspruch.includes(value)
+        ? prev.widerspruch.filter((item) => item !== value)
+        : [...prev.widerspruch, value],
+    }));
+  };
+
+  const handleErklaererChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      erklaerer: value as "betroffener" | "vertreter",
+    }));
+  };
+
+  const handleDurchsuchungGestattetChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      durchsuchungGestattet: value as "ja" | "nein" | "nicht",
+    }));
+  };
+
+  const handleCheckboxChange = (
+    field: "durchsichtEinverstanden" | "zeugeVerzichtet"
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
   };
 
   const clearSignature = (ref: React.RefObject<SignaturePad | null>) => {
     ref.current?.clear();
+    if (ref === signatureBetroffenerRef) {
+      setFormData((prev) => ({ ...prev, signatureBetroffener: "" }));
+    } else if (ref === signatureZeugeRef) {
+      setFormData((prev) => ({ ...prev, signatureZeuge: "" }));
+    }
+  };
+
+  const handleSignatureSave = () => {
+    if (signatureBetroffenerRef.current?.isEmpty()) {
+      setFormData((prev) => ({ ...prev, signatureBetroffener: "" }));
+    } else {
+      const signatureBetroffener = signatureBetroffenerRef.current
+        ?.getTrimmedCanvas()
+        .toDataURL("image/png");
+      if (signatureBetroffener) {
+        setFormData((prev) => ({ ...prev, signatureBetroffener }));
+      }
+    }
+
+    if (signatureZeugeRef.current?.isEmpty()) {
+      setFormData((prev) => ({ ...prev, signatureZeuge: "" }));
+    } else {
+      const signatureZeuge = signatureZeugeRef.current
+        ?.getTrimmedCanvas()
+        .toDataURL("image/png");
+      if (signatureZeuge) {
+        setFormData((prev) => ({ ...prev, signatureZeuge }));
+      }
+    }
   };
 
   return (
@@ -68,11 +145,14 @@ export default function Erklaerung() {
           </div>
         </CardHeader>
         <CardContent>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <div className="grid gap-6">
               <div className="grid gap-2">
                 <Label>Erklärender</Label>
-                <Select>
+                <Select
+                  value={formData.erklaerer || undefined}
+                  onValueChange={handleErklaererChange}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Bitte wählen" />
                   </SelectTrigger>
@@ -85,7 +165,10 @@ export default function Erklaerung() {
 
               <div className="grid gap-2">
                 <Label>Durchsuchung gestattet?</Label>
-                <Select>
+                <Select
+                  value={formData.durchsuchungGestattet || undefined}
+                  onValueChange={handleDurchsuchungGestattetChange}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Bitte wählen" />
                   </SelectTrigger>
@@ -107,7 +190,7 @@ export default function Erklaerung() {
                     >
                       <Checkbox
                         id={`widerspruch-${option.value}`}
-                        checked={selectedWiderspruch.includes(option.value)}
+                        checked={formData.widerspruch.includes(option.value)}
                         onCheckedChange={() =>
                           handleWiderspruchChange(option.value)
                         }
@@ -116,7 +199,7 @@ export default function Erklaerung() {
                         htmlFor={`widerspruch-${option.value}`}
                         className="font-normal"
                       >
-                        {option.label}
+                        #{option.label} - {option.sachen}
                       </Label>
                     </div>
                   ))}
@@ -127,7 +210,13 @@ export default function Erklaerung() {
                 <Label>Weitere Erklärungen</Label>
                 <div className="grid gap-4">
                   <div className="flex items-start space-x-3">
-                    <Checkbox id="durchsicht" />
+                    <Checkbox
+                      id="durchsicht"
+                      checked={formData.durchsichtEinverstanden}
+                      onCheckedChange={() =>
+                        handleCheckboxChange("durchsichtEinverstanden")
+                      }
+                    />
                     <Label
                       htmlFor="durchsicht"
                       className="font-normal leading-tight"
@@ -137,7 +226,13 @@ export default function Erklaerung() {
                     </Label>
                   </div>
                   <div className="flex items-start space-x-3">
-                    <Checkbox id="zeuge" />
+                    <Checkbox
+                      id="zeuge"
+                      checked={formData.zeugeVerzichtet}
+                      onCheckedChange={() =>
+                        handleCheckboxChange("zeugeVerzichtet")
+                      }
+                    />
                     <Label
                       htmlFor="zeuge"
                       className="font-normal leading-tight"
@@ -162,6 +257,7 @@ export default function Erklaerung() {
                             className: "w-full h-32 rounded-md",
                           }}
                           backgroundColor="white"
+                          onEnd={handleSignatureSave}
                         />
                       </div>
                       <Button
@@ -185,6 +281,7 @@ export default function Erklaerung() {
                             className: "w-full h-32 rounded-md",
                           }}
                           backgroundColor="white"
+                          onEnd={handleSignatureSave}
                         />
                       </div>
                       <Button
@@ -202,24 +299,14 @@ export default function Erklaerung() {
               </div>
             </div>
 
-            <Button
-              type="submit"
+            <SaveButton
+              vorgang={vorgang}
+              updateVorgang={updateVorgang}
+              sectionName="erklaerung"
+              formData={formData}
               className="w-full"
-              onClick={(e) => {
-                e.preventDefault();
-                // Here you can get the signatures as base64 strings
-                /*const signatureBetroffener = signatureBetroffenerRef.current
-                  ?.getTrimmedCanvas()
-                  .toDataURL();
-                const signatureZeuge = signatureZeugeRef.current
-                  ?.getTrimmedCanvas()
-                  .toDataURL();*/
-                // Handle saving...
-              }}
-              asChild
-            >
-              <Link href={`/vorgaenge/${vorgang.id}`}>Speichern</Link>
-            </Button>
+              onBeforeSave={handleSignatureSave}
+            />
           </form>
         </CardContent>
       </Card>

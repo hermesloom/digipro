@@ -18,6 +18,7 @@ export async function PATCH(
     const client = await clientPromise;
     const db = client.db("digipro");
 
+    delete body._id;
     const result = await db
       .collection("vorgaenge")
       .updateOne(

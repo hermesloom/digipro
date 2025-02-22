@@ -13,23 +13,20 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
-import { Vorgang } from "@/lib/session";
 import { useVorgang } from "@/contexts/SessionContext";
+import { SaveButton } from "@/app/components/SaveButton";
 
 export default function Einrichtung() {
   const today = new Date().toISOString().split("T")[0];
-  const router = useRouter();
   const { updateVorgang } = useSession();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const vorgang = useVorgang();
 
   const [formData, setFormData] = useState({
     vorgangsnummer: vorgang?.einrichtung?.vorgangsnummer || "",
     ort: vorgang?.einrichtung?.ort || "",
-    datum: vorgang?.einrichtung?.datum || today,
+    datumBeginn: vorgang?.einrichtung?.datumBeginn || "",
+    datumEnde: vorgang?.einrichtung?.datumEnde || "",
     startTime: vorgang?.einrichtung?.startTime || "",
     endTime: vorgang?.einrichtung?.endTime || "",
   });
@@ -40,41 +37,6 @@ export default function Einrichtung() {
       ...prev,
       [id]: value,
     }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const updatedVorgang: Vorgang = {
-        ...vorgang!,
-        einrichtung: {
-          ...formData,
-        },
-      };
-
-      const response = await fetch(`/api/vorgaenge/${vorgang.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedVorgang),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update vorgang");
-      }
-
-      const data = await response.json();
-      updateVorgang(vorgang.id, data);
-      router.push(`/vorgaenge/${vorgang.id}`);
-    } catch (error) {
-      console.error("Error updating vorgang:", error);
-      // Here you might want to show an error message to the user
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   if (!vorgang) {
@@ -102,7 +64,7 @@ export default function Einrichtung() {
           </div>
         </CardHeader>
         <CardContent>
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <div className="grid gap-2">
               <Label htmlFor="vorgangsnummer">Vorgangsnummer</Label>
               <Input
@@ -123,46 +85,72 @@ export default function Einrichtung() {
               />
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="datum">Datum</Label>
-              <Input
-                id="datum"
-                type="date"
-                value={formData.datum}
-                onChange={handleChange}
-              />
+            <div className="space-y-2">
+              <Label>Beginn der Maßnahme</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label
+                    htmlFor="datumBeginn"
+                    className="text-muted-foreground"
+                  >
+                    Datum
+                  </Label>
+                  <Input
+                    id="datumBeginn"
+                    type="date"
+                    value={formData.datumBeginn}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="startTime" className="text-muted-foreground">
+                    Uhrzeit
+                  </Label>
+                  <Input
+                    id="startTime"
+                    type="time"
+                    value={formData.startTime}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="startTime">Uhrzeit Beginn</Label>
-              <Input
-                id="startTime"
-                type="time"
-                value={formData.startTime}
-                onChange={handleChange}
-              />
+            <div className="space-y-2">
+              <Label>Ende der Maßnahme</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="datumEnde" className="text-muted-foreground">
+                    Datum
+                  </Label>
+                  <Input
+                    id="datumEnde"
+                    type="date"
+                    value={formData.datumEnde}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="endTime" className="text-muted-foreground">
+                    Uhrzeit
+                  </Label>
+                  <Input
+                    id="endTime"
+                    type="time"
+                    value={formData.endTime}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="endTime">Uhrzeit Ende</Label>
-              <Input
-                id="endTime"
-                type="time"
-                value={formData.endTime}
-                onChange={handleChange}
-              />
-            </div>
-
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Speichern...
-                </>
-              ) : (
-                "Speichern"
-              )}
-            </Button>
+            <SaveButton
+              vorgang={vorgang}
+              updateVorgang={updateVorgang}
+              sectionName="einrichtung"
+              formData={formData}
+              className="w-full"
+            />
           </form>
         </CardContent>
       </Card>

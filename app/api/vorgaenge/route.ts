@@ -7,15 +7,14 @@ export async function GET() {
     const client = await clientPromise;
     const db = client.db("digipro");
 
-    const vorgaenge = await db
-      .collection("vorgaenge")
-      .find({})
-      .map((doc) => ({
-        id: doc._id.toString(),
-      }))
-      .toArray();
+    const vorgaenge = await db.collection("vorgaenge").find({}).toArray();
 
-    return NextResponse.json(vorgaenge);
+    return NextResponse.json(
+      vorgaenge.map((vorgang) => ({
+        ...vorgang,
+        id: vorgang._id.toString(),
+      }))
+    );
   } catch (e) {
     console.error(e);
     return NextResponse.json(

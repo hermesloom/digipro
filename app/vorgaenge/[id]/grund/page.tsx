@@ -22,12 +22,49 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useVorgang } from "@/contexts/SessionContext";
+import { useSession } from "@/contexts/SessionContext";
+import { SaveButton } from "@/app/components/SaveButton";
 
 export default function Grund() {
   const vorgang = useVorgang();
-  const [anordnungsTyp, setAnordnungsTyp] = useState<
-    "anordnung" | "gefahr" | null
-  >(null);
+  const { updateVorgang } = useSession();
+
+  const [formData, setFormData] = useState({
+    zweck: {
+      strafverfolgung: vorgang.grund?.zweck?.strafverfolgung || false,
+      ordnungswidrigkeiten: vorgang.grund?.zweck?.ordnungswidrigkeiten || false,
+      gefahrenabwehr: vorgang.grund?.zweck?.gefahrenabwehr || false,
+    },
+    grund: vorgang.grund?.grund || "",
+    anordnungsTyp: vorgang.grund?.anordnungsTyp || null,
+    anordnungDetails: vorgang.grund?.anordnungDetails || "",
+  });
+
+  const handleCheckboxChange = (id: keyof typeof formData.zweck) => {
+    setFormData((prev) => ({
+      ...prev,
+      zweck: {
+        ...prev.zweck,
+        [id]: !prev.zweck[id],
+      },
+    }));
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+
+  const handleAnordnungsTypChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      anordnungsTyp: value as "anordnung" | "gefahr",
+      anordnungDetails: "", // Reset details when type changes
+    }));
+  };
 
   return (
     <div className="min-h-screen p-4">
@@ -50,12 +87,18 @@ export default function Grund() {
           </div>
         </CardHeader>
         <CardContent>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <div className="grid gap-4">
               <Label>Zweck der Maßnahme</Label>
               <div className="grid gap-2">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="strafverfolgung" />
+                  <Checkbox
+                    id="strafverfolgung"
+                    checked={formData.zweck.strafverfolgung}
+                    onCheckedChange={() =>
+                      handleCheckboxChange("strafverfolgung")
+                    }
+                  />
                   <Label
                     htmlFor="strafverfolgung"
                     className="font-normal cursor-pointer"
@@ -64,7 +107,13 @@ export default function Grund() {
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="ordnungswidrigkeiten" />
+                  <Checkbox
+                    id="ordnungswidrigkeiten"
+                    checked={formData.zweck.ordnungswidrigkeiten}
+                    onCheckedChange={() =>
+                      handleCheckboxChange("ordnungswidrigkeiten")
+                    }
+                  />
                   <Label
                     htmlFor="ordnungswidrigkeiten"
                     className="font-normal cursor-pointer"
@@ -73,7 +122,13 @@ export default function Grund() {
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="gefahrenabwehr" />
+                  <Checkbox
+                    id="gefahrenabwehr"
+                    checked={formData.zweck.gefahrenabwehr}
+                    onCheckedChange={() =>
+                      handleCheckboxChange("gefahrenabwehr")
+                    }
+                  />
                   <Label
                     htmlFor="gefahrenabwehr"
                     className="font-normal cursor-pointer"
@@ -88,16 +143,19 @@ export default function Grund() {
               <Label htmlFor="grund">
                 Aus folgendem Grund (ggf. Straftatbezeichnung)
               </Label>
-              <Input id="grund" placeholder="Grund der Maßnahme eingeben" />
+              <Input
+                id="grund"
+                placeholder="Grund der Maßnahme eingeben"
+                value={formData.grund}
+                onChange={handleInputChange}
+              />
             </div>
 
             <div className="grid gap-2">
               <Label>Art der Anordnung</Label>
               <Select
-                value={anordnungsTyp || undefined}
-                onValueChange={(value) =>
-                  setAnordnungsTyp(value as "anordnung" | "gefahr")
-                }
+                value={formData.anordnungsTyp || undefined}
+                onValueChange={handleAnordnungsTypChange}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Bitte wählen" />
@@ -111,26 +169,37 @@ export default function Grund() {
               </Select>
             </div>
 
-            {anordnungsTyp === "anordnung" ? (
+            {formData.anordnungsTyp === "anordnung" ? (
               <div className="grid gap-2">
-                <Label htmlFor="aktenzeichen">
+                <Label htmlFor="anordnungDetails">
                   Az. der anordnenden Behörde oder Gericht bzw. Name, Dienstgrad
                 </Label>
                 <Input
-                  id="aktenzeichen"
+                  id="anordnungDetails"
                   placeholder="Aktenzeichen oder Name eingeben"
+                  value={formData.anordnungDetails}
+                  onChange={handleInputChange}
                 />
               </div>
-            ) : anordnungsTyp === "gefahr" ? (
+            ) : formData.anordnungsTyp === "gefahr" ? (
               <div className="grid gap-2">
-                <Label htmlFor="person">bei der oder dem</Label>
-                <Input id="person" placeholder="Person eingeben" />
+                <Label htmlFor="anordnungDetails">bei der oder dem</Label>
+                <Input
+                  id="anordnungDetails"
+                  placeholder="Person eingeben"
+                  value={formData.anordnungDetails}
+                  onChange={handleInputChange}
+                />
               </div>
             ) : null}
 
-            <Button type="submit" className="w-full" asChild>
-              <Link href={`/vorgaenge/${vorgang.id}`}>Speichern</Link>
-            </Button>
+            <SaveButton
+              vorgang={vorgang}
+              updateVorgang={updateVorgang}
+              sectionName="grund"
+              formData={formData}
+              className="w-full"
+            />
           </form>
         </CardContent>
       </Card>

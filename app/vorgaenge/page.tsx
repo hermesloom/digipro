@@ -17,8 +17,7 @@ import { Vorgang } from "@/lib/session";
 export default function Vorgaenge() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { vorgaenge, addVorgang, vorgaengeLoaded, setLoadedVorgaenge } =
-    useSession();
+  const { vorgaenge, addVorgang, vorgaengeLoaded } = useSession();
 
   const handleAddVorgang = async () => {
     try {

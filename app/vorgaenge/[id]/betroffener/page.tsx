@@ -13,9 +13,22 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useVorgang } from "@/contexts/SessionContext";
+import { useState } from "react";
+import { useSession } from "@/contexts/SessionContext";
+import { SaveButton } from "@/app/components/SaveButton";
 
 export default function Betroffener() {
   const vorgang = useVorgang();
+  const { updateVorgang } = useSession();
+  const [formData, setFormData] = useState({
+    name: vorgang.betroffener?.name || "",
+    birthdate: vorgang.betroffener?.birthdate || "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
 
   return (
     <div className="min-h-screen p-4">
@@ -38,23 +51,37 @@ export default function Betroffener() {
           </div>
         </CardHeader>
         <CardContent>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
             <div className="grid gap-2">
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
                 placeholder="Vollständiger Name des Betroffenen"
+                value={formData.name}
+                onChange={handleChange}
+                required
               />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="birthdate">Geburtsdatum</Label>
-              <Input id="birthdate" type="date" placeholder="TT.MM.JJJJ" />
+              <Input
+                id="birthdate"
+                type="date"
+                placeholder="TT.MM.JJJJ"
+                value={formData.birthdate}
+                onChange={handleChange}
+                required
+              />
             </div>
 
-            <Button type="submit" className="w-full" asChild>
-              <Link href={`/vorgaenge/${vorgang.id}/anwesende`}>Speichern</Link>
-            </Button>
+            <SaveButton
+              vorgang={vorgang}
+              updateVorgang={updateVorgang}
+              sectionName="betroffener"
+              formData={formData}
+              className="w-full"
+            />
           </form>
         </CardContent>
       </Card>
