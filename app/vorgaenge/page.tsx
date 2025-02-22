@@ -13,11 +13,24 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSession } from "@/contexts/SessionContext";
 import { Vorgang } from "@/lib/session";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Vorgaenge() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { vorgaenge, addVorgang, vorgaengeLoaded } = useSession();
+  const { vorgaenge, addVorgang, vorgaengeLoaded, removeVorgang } =
+    useSession();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleAddVorgang = async () => {
     try {
@@ -39,6 +52,25 @@ export default function Vorgaenge() {
       console.error("Error creating Vorgang:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      setDeletingId(id);
+      const response = await fetch(`/api/vorgaenge/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete Vorgang");
+      }
+
+      removeVorgang(id);
+    } catch (error) {
+      console.error("Error deleting Vorgang:", error);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -90,13 +122,68 @@ export default function Vorgaenge() {
                   key={vorgang.id}
                   className="flex items-center justify-between p-4 rounded-lg border"
                 >
-                  <div>
-                    <p className="font-medium">Vorgang {vorgang.id}</p>
-                    <p className="text-sm text-muted-foreground">TODO</p>
+                  <div className="space-y-1">
+                    <p className="font-medium">
+                      {vorgang.einrichtung?.vorgangsnummer
+                        ? `Vorgang ${vorgang.einrichtung.vorgangsnummer}`
+                        : `Vorgang ${vorgang.id}`}
+                    </p>
+                    {vorgang.einrichtung?.ort && (
+                      <p className="text-sm text-muted-foreground">
+                        Ort: {vorgang.einrichtung.ort}
+                      </p>
+                    )}
+                    {vorgang.einrichtung?.datumBeginn && (
+                      <p className="text-sm text-muted-foreground">
+                        Datum:{" "}
+                        {new Date(
+                          vorgang.einrichtung.datumBeginn
+                        ).toLocaleDateString("de-DE")}
+                        {vorgang.einrichtung.startTime &&
+                          ` ${vorgang.einrichtung.startTime} Uhr`}
+                      </p>
+                    )}
+                    {vorgang.betroffener?.name && (
+                      <p className="text-sm text-muted-foreground">
+                        Betroffene Person: {vorgang.betroffener.name}
+                      </p>
+                    )}
                   </div>
-                  <Button variant="outline" asChild>
-                    <Link href={`/vorgaenge/${vorgang.id}`}>Bearbeiten</Link>
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" asChild>
+                      <Link href={`/vorgaenge/${vorgang.id}`}>Bearbeiten</Link>
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          disabled={deletingId === vorgang.id}
+                        >
+                          {deletingId === vorgang.id
+                            ? "Wird gelöscht..."
+                            : "Löschen"}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Vorgang löschen</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Möchten Sie diesen Vorgang wirklich löschen? Diese
+                            Aktion kann nicht rückgängig gemacht werden.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(vorgang.id)}
+                            className="bg-destructive hover:bg-destructive/90"
+                          >
+                            Löschen
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               ))}
             </div>

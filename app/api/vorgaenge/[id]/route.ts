@@ -46,3 +46,39 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+
+    // Validate ObjectId
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db("digipro");
+
+    const result = await db
+      .collection("vorgaenge")
+      .deleteOne({ _id: new ObjectId(id) });
+
+    if (!result.deletedCount) {
+      return NextResponse.json({ error: "Vorgang not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { message: "Vorgang deleted successfully" },
+      { status: 200 }
+    );
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json(
+      { error: "Failed to delete Vorgang" },
+      { status: 500 }
+    );
+  }
+}
