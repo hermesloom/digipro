@@ -18,7 +18,6 @@ import { useVorgang } from "@/contexts/SessionContext";
 import { SaveButton } from "@/app/components/SaveButton";
 
 export default function Einrichtung() {
-  const today = new Date().toISOString().split("T")[0];
   const { updateVorgang } = useSession();
   const vorgang = useVorgang();
 
