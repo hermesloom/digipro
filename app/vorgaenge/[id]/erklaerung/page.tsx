@@ -203,12 +203,12 @@ export default function Erklaerung() {
               onClick={(e) => {
                 e.preventDefault();
                 // Here you can get the signatures as base64 strings
-                const signatureBetroffener = signatureBetroffenerRef.current
+                /*const signatureBetroffener = signatureBetroffenerRef.current
                   ?.getTrimmedCanvas()
                   .toDataURL();
                 const signatureZeuge = signatureZeugeRef.current
                   ?.getTrimmedCanvas()
-                  .toDataURL();
+                  .toDataURL();*/
                 // Handle saving...
               }}
               asChild
