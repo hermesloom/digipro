@@ -10,7 +10,35 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useRouter } from "next/navigation";
+
+const polizeiDienststellen = [
+  "Polizeikommissariat Mitte",
+  "Polizeikommissariat Nord",
+  "Polizeikommissariat Süd",
+  "Polizeikommissariat Bundesautobahn",
+  "Zentraler Kriminaldienst",
+  "Verkehrsunfalldienst",
+  "Polizeikommissariat Meine",
+  "Polizeikommissariat Meinersen",
+  "Polizeikommissariat Wittingen",
+  "Polizeikommissariat Bad Harzburg",
+  "Polizeikommissariat Oberharz",
+  "Polizeikommissariat Seesen",
+  "Polizeikommissariat Peine",
+  "Polizeikommissariat Wolfenbüttel",
+  "Polizeikommissariat Salzgitter-Bad",
+  "Polizeikommissariat Königslutter",
+  "Polizeikommissariat Schöningen",
+  "Polizeikommissariat Helmstedt",
+];
 
 export default function Home() {
   const router = useRouter();
@@ -49,10 +77,18 @@ export default function Home() {
                 <Label htmlFor="dienststelle">
                   Anzeigende Polizeidienststelle
                 </Label>
-                <Input
-                  id="dienststelle"
-                  placeholder="Name der Polizeidienststelle"
-                />
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Wählen Sie eine Dienststelle" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {polizeiDienststellen.map((dienststelle) => (
+                      <SelectItem key={dienststelle} value={dienststelle}>
+                        {dienststelle}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <Button type="submit" className="mt-4">
