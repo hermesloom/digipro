@@ -2,15 +2,23 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import { Session, Vorgang } from "@/lib/session";
-
+import { useParams } from "next/navigation";
 const SessionContext = createContext<Session | undefined>(undefined);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [vorgaenge, setVorgaenge] = useState<Vorgang[]>([]);
   const [vorgaengeLoaded, setVorgaengeLoaded] = useState(false);
 
+  const getVorgang = (id: string) => {
+    return vorgaenge.find((v) => v.id === id);
+  };
+
   const addVorgang = (vorgang: Vorgang) => {
     setVorgaenge((prev) => [...prev, vorgang]);
+  };
+
+  const updateVorgang = (id: string, vorgang: Vorgang) => {
+    setVorgaenge((prev) => prev.map((v) => (v.id === id ? vorgang : v)));
   };
 
   const removeVorgang = (id: string) => {
@@ -26,7 +34,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     <SessionContext.Provider
       value={{
         vorgaenge,
+        getVorgang,
         addVorgang,
+        updateVorgang,
         removeVorgang,
         vorgaengeLoaded,
         setLoadedVorgaenge,
@@ -43,4 +53,14 @@ export function useSession(): Session {
     throw new Error("useSession must be used within a SessionProvider");
   }
   return context;
+}
+
+export function useVorgang(): Vorgang {
+  const { vorgaenge } = useSession();
+  const params = useParams();
+  const vorgang = vorgaenge.find((v) => v.id === params.id);
+  if (!vorgang) {
+    throw new Error("Vorgang not found");
+  }
+  return vorgang;
 }

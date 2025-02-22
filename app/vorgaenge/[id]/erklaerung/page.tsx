@@ -21,8 +21,10 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState, useRef } from "react";
 import SignaturePad from "react-signature-canvas";
+import { useVorgang } from "@/contexts/SessionContext";
 
 export default function Erklaerung() {
+  const vorgang = useVorgang();
   const [selectedWiderspruch, setSelectedWiderspruch] = useState<string[]>([]);
   const signatureBetroffenerRef = useRef<SignaturePad | null>(null);
   const signatureZeugeRef = useRef<SignaturePad | null>(null);
@@ -50,7 +52,10 @@ export default function Erklaerung() {
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader className="space-y-4">
           <Button variant="ghost" asChild className="w-fit -ml-2">
-            <Link href="/vorgaenge/neu" className="flex items-center gap-2">
+            <Link
+              href={`/vorgaenge/${vorgang.id}`}
+              className="flex items-center gap-2"
+            >
               <ArrowLeft className="h-4 w-4" />
               Zurück
             </Link>
@@ -213,7 +218,7 @@ export default function Erklaerung() {
               }}
               asChild
             >
-              <Link href="/vorgaenge/neu">Speichern</Link>
+              <Link href={`/vorgaenge/${vorgang.id}`}>Speichern</Link>
             </Button>
           </form>
         </CardContent>

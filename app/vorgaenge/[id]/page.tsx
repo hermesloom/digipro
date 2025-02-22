@@ -10,6 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Circle, ArrowLeft, PlusCircle } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useSession } from "@/contexts/SessionContext";
 
 const steps = [
   {
@@ -51,6 +53,8 @@ const steps = [
 ];
 
 export default function NeuerVorgang() {
+  const params = useParams();
+
   return (
     <div className="min-h-screen p-4">
       <Card className="w-full max-w-4xl mx-auto">
@@ -91,7 +95,7 @@ export default function NeuerVorgang() {
                   className="ml-auto flex items-center gap-2"
                   asChild
                 >
-                  <Link href={`/vorgaenge/neu/${step.id}`}>
+                  <Link href={`/vorgaenge/${params.id}/${step.id}`}>
                     {step.isButton && <PlusCircle className="h-4 w-4" />}
                     {step.isButton ? "Hinzufügen" : "Ausfüllen"}
                   </Link>

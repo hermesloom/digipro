@@ -28,8 +28,10 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import { X } from "lucide-react";
+import { useVorgang } from "@/contexts/SessionContext";
 
 export default function Beweismittel() {
+  const vorgang = useVorgang();
   const [isScanning, setIsScanning] = useState(false);
   const [barcode, setBarcode] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
@@ -101,7 +103,10 @@ export default function Beweismittel() {
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader className="space-y-4">
           <Button variant="ghost" asChild className="w-fit -ml-2">
-            <Link href="/vorgaenge/neu" className="flex items-center gap-2">
+            <Link
+              href={`/vorgaenge/${vorgang.id}`}
+              className="flex items-center gap-2"
+            >
               <ArrowLeft className="h-4 w-4" />
               Zurück
             </Link>
@@ -235,7 +240,9 @@ export default function Beweismittel() {
             </div>
 
             <Button type="submit" className="w-full" asChild>
-              <Link href="/vorgaenge/neu">Speichern</Link>
+              <Link href={`/vorgaenge/${vorgang.id}/erklaerung`}>
+                Speichern
+              </Link>
             </Button>
           </form>
         </CardContent>

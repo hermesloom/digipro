@@ -14,8 +14,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
+import { useVorgang } from "@/contexts/SessionContext";
 
 export default function Durchsuchung() {
+  const vorgang = useVorgang();
   const [checkedItems, setCheckedItems] = useState({
     person: false,
     sachen: false,
@@ -28,7 +30,10 @@ export default function Durchsuchung() {
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader className="space-y-4">
           <Button variant="ghost" asChild className="w-fit -ml-2">
-            <Link href="/vorgaenge/neu" className="flex items-center gap-2">
+            <Link
+              href={`/vorgaenge/${vorgang.id}`}
+              className="flex items-center gap-2"
+            >
               <ArrowLeft className="h-4 w-4" />
               Zurück
             </Link>
@@ -137,7 +142,9 @@ export default function Durchsuchung() {
             </div>
 
             <Button type="submit" className="w-full" asChild>
-              <Link href="/vorgaenge/neu">Speichern</Link>
+              <Link href={`/vorgaenge/${vorgang.id}/erklaerung`}>
+                Speichern
+              </Link>
             </Button>
           </form>
         </CardContent>

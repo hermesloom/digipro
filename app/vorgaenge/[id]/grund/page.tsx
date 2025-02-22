@@ -21,8 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useVorgang } from "@/contexts/SessionContext";
 
 export default function Grund() {
+  const vorgang = useVorgang();
   const [anordnungsTyp, setAnordnungsTyp] = useState<
     "anordnung" | "gefahr" | null
   >(null);
@@ -32,7 +34,10 @@ export default function Grund() {
       <Card className="w-full max-w-4xl mx-auto">
         <CardHeader className="space-y-4">
           <Button variant="ghost" asChild className="w-fit -ml-2">
-            <Link href="/vorgaenge/neu" className="flex items-center gap-2">
+            <Link
+              href={`/vorgaenge/${vorgang.id}`}
+              className="flex items-center gap-2"
+            >
               <ArrowLeft className="h-4 w-4" />
               Zurück
             </Link>
@@ -124,7 +129,7 @@ export default function Grund() {
             ) : null}
 
             <Button type="submit" className="w-full" asChild>
-              <Link href="/vorgaenge/neu">Speichern</Link>
+              <Link href={`/vorgaenge/${vorgang.id}`}>Speichern</Link>
             </Button>
           </form>
         </CardContent>

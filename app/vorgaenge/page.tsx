@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSession } from "@/contexts/SessionContext";
 import { Vorgang } from "@/lib/session";
 
@@ -19,26 +19,6 @@ export default function Vorgaenge() {
   const [isLoading, setIsLoading] = useState(false);
   const { vorgaenge, addVorgang, vorgaengeLoaded, setLoadedVorgaenge } =
     useSession();
-
-  useEffect(() => {
-    const loadVorgaenge = async () => {
-      if (vorgaengeLoaded) return;
-
-      try {
-        const response = await fetch("/api/vorgaenge");
-        if (!response.ok) {
-          throw new Error("Failed to fetch Vorgänge");
-        }
-
-        const data = await response.json();
-        setLoadedVorgaenge(data);
-      } catch (error) {
-        console.error("Error loading Vorgänge:", error);
-      }
-    };
-
-    loadVorgaenge();
-  }, [vorgaengeLoaded, setLoadedVorgaenge]);
 
   const handleAddVorgang = async () => {
     try {
