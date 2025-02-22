@@ -118,6 +118,11 @@ export default function Beweismittel() {
           <form className="space-y-6">
             <div className="grid gap-4">
               <div className="grid gap-2">
+                <Label htmlFor="lfdNummer">Lfd. Nummer</Label>
+                <Input id="lfdNummer" value="01" disabled />
+              </div>
+
+              <div className="grid gap-2">
                 <Label>Art der Maßnahme</Label>
                 <Select>
                   <SelectTrigger>
