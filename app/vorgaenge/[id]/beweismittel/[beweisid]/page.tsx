@@ -55,6 +55,8 @@ export default function Beweismittel() {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
+  const [currentCameraIndex, setCurrentCameraIndex] = useState(0);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -144,7 +146,24 @@ export default function Beweismittel() {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      // Get list of available cameras if we haven't already
+      if (cameras.length === 0) {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(
+          (device) => device.kind === "videoinput"
+        );
+        setCameras(videoDevices);
+      }
+
+      // Get the current camera or fall back to first available
+      const camera = cameras[currentCameraIndex] || cameras[0];
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId: camera?.deviceId,
+        },
+      });
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
@@ -180,6 +199,20 @@ export default function Beweismittel() {
       photos: [...prev.photos, photoUrl],
     }));
     setIsCameraOpen(false);
+  };
+
+  const switchCamera = async () => {
+    if (cameras.length <= 1) return;
+
+    // Stop current stream
+    stopCamera();
+
+    // Switch to next camera
+    const nextIndex = (currentCameraIndex + 1) % cameras.length;
+    setCurrentCameraIndex(nextIndex);
+
+    // Restart camera with new device
+    await startCamera();
   };
 
   useEffect(() => {
@@ -381,7 +414,21 @@ export default function Beweismittel() {
               className="w-full h-full object-cover"
             />
           </div>
-          <Button onClick={takePhoto}>Foto aufnehmen</Button>
+          <div className="flex gap-2">
+            <Button onClick={takePhoto} className="flex-1">
+              Foto aufnehmen
+            </Button>
+            {cameras.length > 1 && (
+              <Button
+                variant="outline"
+                onClick={switchCamera}
+                className="flex items-center gap-2"
+              >
+                <Camera className="h-4 w-4" />
+                Kamera wechseln
+              </Button>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
