@@ -8,8 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, X } from "lucide-react";
-import Link from "next/link";
+import { X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
   Select,

@@ -26,21 +26,11 @@ export function VorgangDialog({
   open,
   onOpenChange,
 }: VorgangDialogProps) {
-  const { setup } = useSession();
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({
     contentRef,
     bodyClass: "p-12",
   });
-
-  const formatDate = (date: string) => {
-    return format(new Date(date), "dd.MM.yyyy", { locale: de });
-  };
-
-  // Add helper function for time formatting
-  const formatTime = (time?: string) => {
-    return time ? `${time} Uhr` : "Keine Angabe";
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
