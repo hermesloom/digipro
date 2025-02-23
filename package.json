@@ -26,6 +26,7 @@
     "mongodb": "^6.13.1",
     "next": "15.2.0-canary.69",
     "react": "^19.0.0",
+    "react-barcode": "^1.5.3",
     "react-dom": "^19.0.0",
     "react-signature-canvas": "1.1.0-alpha.1",
     "react-to-pdf": "^1.0.1",

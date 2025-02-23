@@ -197,9 +197,7 @@ export default function Vorgaenge() {
                       </AlertDialog>
                     </div>
                     <div className="flex justify-end">
-                      <Button variant="outline">
-                        Export für NIVADIS erstellen
-                      </Button>
+                      <Button variant="outline">Export für NIVADIS</Button>
                     </div>
                   </div>
                 </div>

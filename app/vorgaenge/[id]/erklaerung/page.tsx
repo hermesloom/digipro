@@ -23,6 +23,7 @@ import { useState, useRef, useEffect } from "react";
 import SignaturePad from "react-signature-canvas";
 import { useVorgang, useSession } from "@/contexts/SessionContext";
 import { SaveButton } from "@/app/components/SaveButton";
+import { VorgangDialogContentsWithoutErklaerung } from "@/app/components/VorgangDialogContentsWithoutErklaerung";
 
 export default function Erklaerung() {
   const vorgang = useVorgang();
@@ -53,11 +54,13 @@ export default function Erklaerung() {
     }
   }, [formData.signatureBetroffener, formData.signatureZeuge]);
 
-  const widerspruchOptions = vorgang.beweismittel.map((beweismittel) => ({
-    value: beweismittel.id,
-    label: beweismittel.lfdNummer,
-    sachen: beweismittel.sachen || "Keine Beschreibung",
-  }));
+  const widerspruchOptions = (vorgang.beweismittel ?? []).map(
+    (beweismittel) => ({
+      value: beweismittel.id,
+      label: beweismittel.lfdNummer,
+      sachen: beweismittel.sachen || "Keine Beschreibung",
+    })
+  );
 
   const handleWiderspruchChange = (value: string) => {
     setFormData((prev) => ({
@@ -137,16 +140,12 @@ export default function Erklaerung() {
   return (
     <div className="min-h-screen p-4">
       <Card className="w-full max-w-4xl mx-auto">
+        <CardContent>
+          <div className="space-y-6">
+            <VorgangDialogContentsWithoutErklaerung vorgang={vorgang} />
+          </div>
+        </CardContent>
         <CardHeader className="space-y-4">
-          <Button variant="ghost" asChild className="w-fit -ml-2">
-            <Link
-              href={`/vorgaenge/${vorgang.id}`}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Zurück
-            </Link>
-          </Button>
           <div>
             <CardTitle>Erklärung</CardTitle>
             <CardDescription>
@@ -190,31 +189,33 @@ export default function Erklaerung() {
                 </Select>
               </div>
 
-              <div className="grid gap-4">
-                <Label>Widerspruch erhoben gegen</Label>
-                <div className="grid gap-2">
-                  {widerspruchOptions.map((option) => (
-                    <div
-                      key={option.value}
-                      className="flex items-center space-x-2"
-                    >
-                      <Checkbox
-                        id={`widerspruch-${option.value}`}
-                        checked={formData.widerspruch.includes(option.value)}
-                        onCheckedChange={() =>
-                          handleWiderspruchChange(option.value)
-                        }
-                      />
-                      <Label
-                        htmlFor={`widerspruch-${option.value}`}
-                        className="font-normal"
+              {widerspruchOptions.length > 0 && (
+                <div className="grid gap-4">
+                  <Label>Widerspruch erhoben gegen</Label>
+                  <div className="grid gap-2">
+                    {widerspruchOptions.map((option) => (
+                      <div
+                        key={option.value}
+                        className="flex items-center space-x-2"
                       >
-                        #{option.label} - {option.sachen}
-                      </Label>
-                    </div>
-                  ))}
+                        <Checkbox
+                          id={`widerspruch-${option.value}`}
+                          checked={formData.widerspruch.includes(option.value)}
+                          onCheckedChange={() =>
+                            handleWiderspruchChange(option.value)
+                          }
+                        />
+                        <Label
+                          htmlFor={`widerspruch-${option.value}`}
+                          className="font-normal"
+                        >
+                          #{option.label} - {option.sachen}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="grid gap-4">
                 <Label>Weitere Erklärungen</Label>

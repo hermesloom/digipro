@@ -26,38 +26,38 @@ import { useState } from "react";
 const steps = [
   {
     id: "einrichtung",
-    title: "Einrichtung",
+    title: "1. Einrichtung",
     description: "Ort und Zeit der Maßnahme",
   },
   {
     id: "betroffener",
-    title: "Betroffener",
+    title: "2. Betroffener",
     description: "Persönliche Daten des Betroffenen",
   },
   {
     id: "grund",
-    title: "Grund",
+    title: "3. Grund",
     description: "Grund der polizeilichen Maßnahme",
   },
   {
     id: "durchsuchung",
-    title: "Durchsuchung",
+    title: "4. Durchsuchung",
     description: "Details zur Durchsuchung",
   },
   {
     id: "beweismittel",
-    title: "Beweismittel",
+    title: "5. Beweismittel",
     description: "Sichergestellte Beweismittel",
     isButton: true,
   },
   {
     id: "anwesende",
-    title: "Anwesende",
+    title: "6. Anwesende",
     description: "Anwesende Personen und Zeugen",
   },
   {
     id: "erklaerung",
-    title: "Erklärung",
+    title: "7. Erklärung",
     description: "Abschließende Erklärung",
   },
 ];
@@ -105,11 +105,6 @@ export default function NeuerVorgang() {
     if (!person && !sachen.checked && !wohnung.checked && !sonstige.checked) {
       return false;
     }
-
-    // Check if selected types have their required details
-    if (sachen.checked && !sachen.description) return false;
-    if (wohnung.checked && !wohnung.description) return false;
-    if (sonstige.checked && !sonstige.description) return false;
 
     return true;
   };
@@ -232,7 +227,14 @@ export default function NeuerVorgang() {
             {steps.map((step) => (
               <div
                 key={step.id}
-                className="flex items-start gap-4 p-4 rounded-lg border hover:bg-muted/50 transition-colors"
+                className={`flex items-start gap-4 p-4 rounded-lg border hover:bg-muted/50 transition-colors ${
+                  step.id !== "beweismittel" ? "cursor-pointer" : ""
+                }`}
+                onClick={() => {
+                  if (step.id !== "beweismittel") {
+                    router.push(`/vorgaenge/${params.id}/${step.id}`);
+                  }
+                }}
               >
                 <div className="text-muted-foreground">
                   {(step.id === "einrichtung" &&
@@ -315,19 +317,17 @@ export default function NeuerVorgang() {
                       </div>
                     )}
                 </div>
-                <Button
-                  variant={step.isButton ? "default" : "outline"}
-                  className="ml-auto flex items-center gap-2"
-                  onClick={
-                    step.id === "beweismittel"
-                      ? handleAddBeweismittel
-                      : undefined
-                  }
-                  asChild={step.id !== "beweismittel"}
-                  disabled={step.id === "beweismittel" && isAddingBeweismittel}
-                >
-                  {step.id === "beweismittel" ? (
-                    isAddingBeweismittel ? (
+                {step.id === "beweismittel" && (
+                  <Button
+                    variant="default"
+                    className="ml-auto flex items-center gap-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddBeweismittel();
+                    }}
+                    disabled={isAddingBeweismittel}
+                  >
+                    {isAddingBeweismittel ? (
                       <>
                         <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                         Wird hinzugefügt...
@@ -337,13 +337,9 @@ export default function NeuerVorgang() {
                         <PlusCircle className="h-4 w-4" />
                         Hinzufügen
                       </>
-                    )
-                  ) : (
-                    <Link href={`/vorgaenge/${params.id}/${step.id}`}>
-                      Ausfüllen
-                    </Link>
-                  )}
-                </Button>
+                    )}
+                  </Button>
+                )}
               </div>
             ))}
           </div>
