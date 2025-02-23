@@ -101,25 +101,65 @@ export default function Erklaerung() {
   };
 
   const handleSignatureSave = () => {
-    if (signatureBetroffenerRef.current?.isEmpty()) {
-      setFormData((prev) => ({ ...prev, signatureBetroffener: "" }));
-    } else {
-      const signatureBetroffener = signatureBetroffenerRef.current
-        ?.getTrimmedCanvas()
-        .toDataURL("image/png");
-      if (signatureBetroffener) {
-        setFormData((prev) => ({ ...prev, signatureBetroffener }));
+    try {
+      // Handle Betroffener signature
+      if (signatureBetroffenerRef.current) {
+        if (signatureBetroffenerRef.current.isEmpty()) {
+          setFormData((prev) => ({ ...prev, signatureBetroffener: "" }));
+        } else {
+          // Check if getTrimmedCanvas is available
+          if (
+            typeof signatureBetroffenerRef.current.getTrimmedCanvas ===
+            "function"
+          ) {
+            const signatureBetroffener = signatureBetroffenerRef.current
+              .getTrimmedCanvas()
+              .toDataURL("image/png");
+            setFormData((prev) => ({ ...prev, signatureBetroffener }));
+          }
+        }
       }
-    }
 
-    if (signatureZeugeRef.current?.isEmpty()) {
-      setFormData((prev) => ({ ...prev, signatureZeuge: "" }));
-    } else {
-      const signatureZeuge = signatureZeugeRef.current
-        ?.getTrimmedCanvas()
-        .toDataURL("image/png");
-      if (signatureZeuge) {
-        setFormData((prev) => ({ ...prev, signatureZeuge }));
+      // Handle Zeuge signature
+      if (signatureZeugeRef.current) {
+        if (signatureZeugeRef.current.isEmpty()) {
+          setFormData((prev) => ({ ...prev, signatureZeuge: "" }));
+        } else {
+          // Check if getTrimmedCanvas is available
+          if (
+            typeof signatureZeugeRef.current.getTrimmedCanvas === "function"
+          ) {
+            const signatureZeuge = signatureZeugeRef.current
+              .getTrimmedCanvas()
+              .toDataURL("image/png");
+            setFormData((prev) => ({ ...prev, signatureZeuge }));
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error saving signatures:", error);
+      // Fallback: try to get regular canvas data if trimmed fails
+      try {
+        if (
+          signatureBetroffenerRef.current &&
+          !signatureBetroffenerRef.current.isEmpty()
+        ) {
+          const signatureBetroffener = signatureBetroffenerRef.current.toData();
+          setFormData((prev) => ({
+            ...prev,
+            signatureBetroffener: JSON.stringify(signatureBetroffener),
+          }));
+        }
+
+        if (signatureZeugeRef.current && !signatureZeugeRef.current.isEmpty()) {
+          const signatureZeuge = signatureZeugeRef.current.toData();
+          setFormData((prev) => ({
+            ...prev,
+            signatureZeuge: JSON.stringify(signatureZeuge),
+          }));
+        }
+      } catch (fallbackError) {
+        console.error("Fallback signature save failed:", fallbackError);
       }
     }
   };
