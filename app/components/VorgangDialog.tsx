@@ -12,6 +12,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
+import { useSession } from "@/contexts/SessionContext";
 
 interface VorgangDialogProps {
   vorgang: Vorgang;
@@ -24,6 +25,7 @@ export function VorgangDialog({
   open,
   onOpenChange,
 }: VorgangDialogProps) {
+  const { setup } = useSession();
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({
     contentRef,
@@ -45,7 +47,7 @@ export function VorgangDialog({
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>
-              Vorgang #{vorgang.einrichtung.vorgangsnummer}
+              Vorgang #{vorgang.einrichtung?.vorgangsnummer || "N/A"}
             </DialogTitle>
             <Button
               variant="outline"
@@ -60,17 +62,40 @@ export function VorgangDialog({
         </DialogHeader>
 
         <div className="space-y-6 py-4" ref={contentRef}>
+          {/* Setup Details */}
+          {setup && (
+            <section className="space-y-3">
+              <h3 className="font-semibold">Dienstliche Angaben</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Name:</span>{" "}
+                  {setup.name}
+                </div>
+                <div>
+                  <span className="text-muted-foreground">
+                    Amtsbezeichnung:
+                  </span>{" "}
+                  {setup.amtsbezeichnung}
+                </div>
+                <div className="col-span-2">
+                  <span className="text-muted-foreground">Dienststelle:</span>{" "}
+                  {setup.polizeiDienststelle}
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* Einrichtung */}
           <section className="space-y-3">
             <h3 className="font-semibold">Einrichtung</h3>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>
                 <span className="text-muted-foreground">Ort:</span>{" "}
-                {vorgang.einrichtung.ort || "Keine Angabe"}
+                {vorgang.einrichtung?.ort || "Keine Angabe"}
               </div>
               <div>
                 <span className="text-muted-foreground">Beginn:</span>{" "}
-                {vorgang.einrichtung.datumBeginn
+                {vorgang.einrichtung?.datumBeginn
                   ? `${formatDate(
                       vorgang.einrichtung.datumBeginn
                     )}, ${formatTime(vorgang.einrichtung.startTime)}`
@@ -78,7 +103,7 @@ export function VorgangDialog({
               </div>
               <div>
                 <span className="text-muted-foreground">Ende:</span>{" "}
-                {vorgang.einrichtung.datumEnde
+                {vorgang.einrichtung?.datumEnde
                   ? `${formatDate(vorgang.einrichtung.datumEnde)}, ${formatTime(
                       vorgang.einrichtung.endTime
                     )}`
@@ -173,7 +198,7 @@ export function VorgangDialog({
           )}
 
           {/* Beweismittel */}
-          {vorgang.beweismittel.length > 0 && (
+          {vorgang.beweismittel?.length > 0 && (
             <section className="space-y-3">
               <h3 className="font-semibold">Beweismittel</h3>
               <div className="space-y-4">

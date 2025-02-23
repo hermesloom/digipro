@@ -14,7 +14,7 @@ export default function VorgaengeLoader({
 }: {
   children: React.ReactNode;
 }) {
-  const { vorgaengeLoaded, setLoadedVorgaenge } = useSession();
+  const { setSetup, vorgaengeLoaded, setLoadedVorgaenge } = useSession();
 
   useEffect(() => {
     const loadVorgaenge = async () => {
@@ -26,15 +26,16 @@ export default function VorgaengeLoader({
           throw new Error("Failed to fetch Vorgänge");
         }
 
-        const data = await response.json();
-        setLoadedVorgaenge(data);
+        const { setup, vorgaenge } = await response.json();
+        setSetup(setup);
+        setLoadedVorgaenge(vorgaenge);
       } catch (error) {
         console.error("Error loading Vorgänge:", error);
       }
     };
 
     loadVorgaenge();
-  }, [vorgaengeLoaded, setLoadedVorgaenge]);
+  }, [vorgaengeLoaded, setLoadedVorgaenge, setSetup]);
 
   if (!vorgaengeLoaded) {
     return (

@@ -1,11 +1,12 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import { Session, Vorgang } from "@/lib/session";
+import { Session, Vorgang, Setup } from "@/lib/session";
 import { useParams } from "next/navigation";
 const SessionContext = createContext<Session | undefined>(undefined);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
+  const [setup, setSetup] = useState<Setup | undefined>(undefined);
   const [vorgaenge, setVorgaenge] = useState<Vorgang[]>([]);
   const [vorgaengeLoaded, setVorgaengeLoaded] = useState(false);
 
@@ -40,6 +41,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         removeVorgang,
         vorgaengeLoaded,
         setLoadedVorgaenge,
+        setup,
+        setSetup,
       }}
     >
       {children}
