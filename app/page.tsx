@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSession } from "@/contexts/SessionContext";
 import { Setup } from "@/lib/session";
 import Image from "next/image";
