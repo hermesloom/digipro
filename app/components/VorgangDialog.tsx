@@ -6,13 +6,10 @@ import {
 } from "@/components/ui/dialog";
 import { useRef } from "react";
 import { Vorgang } from "@/lib/session";
-import { format } from "date-fns";
-import { de } from "date-fns/locale";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
-import { useSession } from "@/contexts/SessionContext";
 import { VorgangDialogContentsWithoutErklaerung } from "./VorgangDialogContentsWithoutErklaerung";
 
 interface VorgangDialogProps {
