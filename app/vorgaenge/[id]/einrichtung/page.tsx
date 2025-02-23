@@ -236,7 +236,7 @@ export default function Einrichtung() {
               formData={formData}
               className="w-full"
               disabled={dateError}
-              label="Speichern"
+              label="Speichern und weiter zum Betroffenen"
               targetRoute="/betroffener"
             />
           </form>
