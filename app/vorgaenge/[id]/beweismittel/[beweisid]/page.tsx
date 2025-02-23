@@ -30,10 +30,12 @@ import Image from "next/image";
 import { useVorgang } from "@/contexts/SessionContext";
 import { useSession } from "@/contexts/SessionContext";
 import { SaveButton } from "@/app/components/SaveButton";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 export default function Beweismittel() {
   const params = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const vorgang = useVorgang();
   const { updateVorgang } = useSession();
   const beweisid = params.beweisid as string;
@@ -50,7 +52,6 @@ export default function Beweismittel() {
     photos: currentBeweismittel?.photos || [],
   });
 
-  const [isScanning, setIsScanning] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -190,6 +191,19 @@ export default function Beweismittel() {
     return () => stopCamera();
   }, [isCameraOpen]);
 
+  useEffect(() => {
+    // Check for barcode in URL params when page loads
+    const barcode = searchParams.get("barcode");
+    if (barcode) {
+      setFormData((prev) => ({
+        ...prev,
+        barcode,
+      }));
+      // Clean up the URL
+      router.replace(`/vorgaenge/${params.id}/beweismittel/${beweisid}`);
+    }
+  }, [searchParams, router, params.id, beweisid]);
+
   return (
     <div className="min-h-screen p-4">
       <Card className="w-full max-w-4xl mx-auto">
@@ -264,7 +278,11 @@ export default function Beweismittel() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setIsScanning(true)}
+                    onClick={() =>
+                      router.push(
+                        `/vorgaenge/${params.id}/beweismittel/${beweisid}/scan`
+                      )
+                    }
                     className="flex items-center gap-2"
                   >
                     <QrCode className="h-4 w-4" />
@@ -364,17 +382,6 @@ export default function Beweismittel() {
             />
           </div>
           <Button onClick={takePhoto}>Foto aufnehmen</Button>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isScanning} onOpenChange={setIsScanning}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Barcode scannen</DialogTitle>
-          </DialogHeader>
-          <div className="aspect-video w-full overflow-hidden rounded-lg bg-muted">
-            {/* Scanner will be integrated here */}
-          </div>
         </DialogContent>
       </Dialog>
     </div>
