@@ -25,6 +25,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { VorgangDialog } from "@/app/components/VorgangDialog";
+import { TimelineDialog } from "@/app/components/TimelineDialog";
 
 export default function Vorgaenge() {
   const router = useRouter();
@@ -33,6 +34,7 @@ export default function Vorgaenge() {
     useSession();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [selectedVorgang, setSelectedVorgang] = useState<string | null>(null);
+  const [timelineVorgang, setTimelineVorgang] = useState<string | null>(null);
 
   const handleAddVorgang = async () => {
     try {
@@ -196,7 +198,13 @@ export default function Vorgaenge() {
                         </AlertDialogContent>
                       </AlertDialog>
                     </div>
-                    <div className="flex justify-end">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => setTimelineVorgang(vorgang.id)}
+                      >
+                        Verlauf
+                      </Button>
                       <Button variant="outline">Export für NIVADIS</Button>
                     </div>
                   </div>
@@ -212,6 +220,14 @@ export default function Vorgaenge() {
           vorgang={vorgaenge.find((v) => v.id === selectedVorgang)!}
           open={Boolean(selectedVorgang)}
           onOpenChange={(open) => !open && setSelectedVorgang(null)}
+        />
+      )}
+
+      {timelineVorgang && (
+        <TimelineDialog
+          vorgang={vorgaenge.find((v) => v.id === timelineVorgang)!}
+          open={Boolean(timelineVorgang)}
+          onOpenChange={(open) => !open && setTimelineVorgang(null)}
         />
       )}
     </div>
