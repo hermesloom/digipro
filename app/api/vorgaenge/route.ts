@@ -8,13 +8,15 @@ export async function GET() {
     const db = client.db("digipro");
 
     const vorgaenge = await db.collection("vorgaenge").find({}).toArray();
+    const setup = await db.collection("setup").findOne({});
 
-    return NextResponse.json(
-      vorgaenge.map((vorgang) => ({
+    return NextResponse.json({
+      setup,
+      vorgaenge: vorgaenge.map((vorgang) => ({
         ...vorgang,
         id: vorgang._id.toString(),
-      }))
-    );
+      })),
+    });
   } catch (e) {
     console.error(e);
     return NextResponse.json(

@@ -61,6 +61,12 @@ export interface Vorgang {
   };
 }
 
+export interface Setup {
+  name: string;
+  amtsbezeichnung: string;
+  polizeiDienststelle: string;
+}
+
 export interface Session {
   vorgaenge: Vorgang[];
   getVorgang: (id: string) => Vorgang | undefined;
@@ -69,4 +75,6 @@ export interface Session {
   removeVorgang: (id: string) => void;
   vorgaengeLoaded: boolean;
   setLoadedVorgaenge: (vorgaenge: Vorgang[]) => void;
+  setup?: Setup;
+  setSetup: (setup: Setup) => void;
 }
