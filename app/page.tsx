@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useSession } from "@/contexts/SessionContext";
 import { Setup } from "@/lib/session";
+import Image from "next/image";
 
 const polizeiDienststellen = [
   "Polizeikommissariat Bad Harzburg",
@@ -81,11 +82,21 @@ export default function Home() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>DIGIPRO</CardTitle>
-          <CardDescription>
-            Bitte geben Sie die erforderlichen Informationen ein
-          </CardDescription>
+        <CardHeader className="space-y-4 items-center text-center">
+          <Image
+            src="/logo.png"
+            alt="DIGIPRO Logo"
+            width={200}
+            height={80}
+            priority
+            className="mx-auto"
+          />
+          <div>
+            <CardTitle>DIGIPRO</CardTitle>
+            <CardDescription>
+              Bitte geben Sie die erforderlichen Informationen ein
+            </CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
