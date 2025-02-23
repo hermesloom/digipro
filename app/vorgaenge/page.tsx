@@ -151,47 +151,56 @@ export default function Vorgaenge() {
                       </p>
                     )}
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setSelectedVorgang(vorgang.id)}
-                      className="flex items-center gap-2"
-                    >
-                      Anzeigen
-                    </Button>
-                    <Button variant="outline" asChild>
-                      <Link href={`/vorgaenge/${vorgang.id}`}>Bearbeiten</Link>
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="destructive"
-                          disabled={deletingId === vorgang.id}
-                        >
-                          {deletingId === vorgang.id
-                            ? "Wird gelöscht..."
-                            : "Löschen"}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Vorgang löschen</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Möchten Sie diesen Vorgang wirklich löschen? Diese
-                            Aktion kann nicht rückgängig gemacht werden.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(vorgang.id)}
-                            className="bg-destructive hover:bg-destructive/90"
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => setSelectedVorgang(vorgang.id)}
+                        className="flex items-center gap-2"
+                      >
+                        Anzeigen
+                      </Button>
+                      <Button variant="outline" asChild>
+                        <Link href={`/vorgaenge/${vorgang.id}`}>
+                          Bearbeiten
+                        </Link>
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            disabled={deletingId === vorgang.id}
                           >
-                            Löschen
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                            {deletingId === vorgang.id
+                              ? "Wird gelöscht..."
+                              : "Löschen"}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Vorgang löschen</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Möchten Sie diesen Vorgang wirklich löschen? Diese
+                              Aktion kann nicht rückgängig gemacht werden.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(vorgang.id)}
+                              className="bg-destructive hover:bg-destructive/90"
+                            >
+                              Löschen
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                    <div className="flex justify-end">
+                      <Button variant="outline">
+                        Export für NIVADIS erstellen
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
